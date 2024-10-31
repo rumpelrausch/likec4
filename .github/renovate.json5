@@ -8,15 +8,12 @@
     'helpers:disableTypesNodeMajor',
   ],
   prHourlyLimit: 15,
-  prConcurrentLimit: 6,
+  prConcurrentLimit: 8,
   rangeStrategy: 'bump',
   updateInternalDeps: true,
   labels: [
     'dependencies',
   ],
-  lockFileMaintenance: {
-    enabled: true,
-  },
   ignorePaths: [
     "e2e/**",
     "examples/**"
@@ -65,7 +62,7 @@
     {
       automerge: true,
       matchPackageNames: [
-        '@tabler{/,}**',
+       // '@tabler{/,}**',
         '@fontsource{/,}**',
       ],
     },

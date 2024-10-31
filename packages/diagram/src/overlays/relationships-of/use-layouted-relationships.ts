@@ -51,7 +51,7 @@ const Sizes = {
     edgesep: 20
   } satisfies GraphLabel,
   edgeLabel: {
-    width: 60
+    width: 65
   } satisfies Label,
 
   emptyNodeOffset: 150,
@@ -63,7 +63,7 @@ const Sizes = {
   // 0 means no spacer
   spacerHeight: 0,
 
-  compoundLabelHeight: 5
+  compoundLabelHeight: 1
 }
 
 export const ZIndexes = {
@@ -91,12 +91,11 @@ function createGraph() {
   columns.reduce((prev, column) => {
     const c = graphColumn(column)
     g.setNode(c.id, {})
-    g.setNode(c.anchor, { width: 40, height: 5 })
+    g.setNode(c.anchor, { width: 40, height: 2 })
     g.setParent(c.anchor, c.id)
     if (prev) {
       g.setEdge(prev, c.anchor, {
-        width: 0,
-        weight: 10
+        width: 0
       })
     }
     return c.anchor
@@ -258,9 +257,6 @@ function createNode(
 
   g.setNode(k.id, sized())
   if (xynode.type === 'compound') {
-    g.setNode(k.id, {
-      padding: 40
-    })
     g.setNode(k.port, {
       width: Sizes.nodeWidth - Sizes.dagre.ranksep,
       height: Sizes.compoundLabelHeight
@@ -469,9 +465,10 @@ function layout(
 
     forEachIncoming(sourceId, relations) {
       const source = createNode('incomers', 'element', likec4model.element(sourceId), ctx)
-      g.setEdge(graphId(source).port, subject.id)
-
-      // const op = source.type === 'compound' ? 'unshift' : 'push'
+      g.setEdge(graphId(source).port, subject.id, {
+        width: Sizes.edgeLabel.width,
+        weight: source.type === 'compound' ? 0 : 1
+      })
 
       subject.data.ports.left.push({
         id: source.id,
@@ -490,9 +487,11 @@ function layout(
 
     forEachOutgoing(targetId, relations) {
       const target = createNode('outgoers', 'element', likec4model.element(targetId), ctx)
-      g.setEdge(subjectElement.id, graphId(target).port)
+      g.setEdge(subjectElement.id, graphId(target).port, {
+        width: Sizes.edgeLabel.width,
+        weight: target.type === 'compound' ? 1 : 2
+      })
 
-      // const op = target.type === 'compound' ? 'unshift' : 'push'
       subject.data.ports.right.push({
         id: target.id,
         type: 'out'
@@ -519,8 +518,8 @@ function layout(
   }
 
   const subjectPortsCount = Math.max(subject.data.ports.left.length, subject.data.ports.right.length)
-  if (subjectPortsCount > 2) {
-    g.node(subjectElement.id).height = Sizes.hodeHeight + (subjectPortsCount - 2) * 1
+  if (subjectPortsCount > 3) {
+    g.node(subjectElement.id).height = Sizes.hodeHeight + (subjectPortsCount - 3) * 5
   }
 
   const nodebounds = applyDagreLayout(ctx.g)

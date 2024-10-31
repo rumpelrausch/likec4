@@ -5,6 +5,7 @@ entry LikeC4Grammar:
     specifications+=SpecificationRule |
     models+=Model  |
     views+=ModelViews |
+    globals+=Globals |
     likec4lib+=LikeC4Lib
   )*
 ;
@@ -196,7 +197,7 @@ MetadataAttribute:
 ModelViews:
   name='views' '{' (
       views+=LikeC4ViewRule |
-      styles+=ViewRuleStyle
+      styles+=ViewRuleStyleOrGlobalRef
     )*
   '}';
 
@@ -266,13 +267,27 @@ ViewLayoutDirection returns string:
 
 ViewRule:
   ViewRulePredicate |
-  ViewRuleStyle |
+  ViewRuleGroup |
+  ViewRuleStyleOrGlobalRef |
   ViewRuleAutoLayout
 ;
 
+ViewRuleGroup:
+  'group' title=String? '{'
+    props+=(
+      ColorProperty |
+      BorderProperty |
+      OpacityProperty
+    )*
+    groupRules+=(
+      ViewRulePredicate |
+      ViewRuleGroup
+    )*
+  '}';
+
 DynamicViewRule:
   DynamicViewIncludePredicate |
-  ViewRuleStyle |
+  ViewRuleStyleOrGlobalRef |
   ViewRuleAutoLayout
 ;
 
@@ -440,6 +455,12 @@ ViewRuleStyle:
     )*
   '}';
 
+ViewRuleGlobalStyle:
+  'global' 'style' style=[GlobalStyleId];
+
+ViewRuleStyleOrGlobalRef:
+  ViewRuleStyle | ViewRuleGlobalStyle;
+
 ViewRuleAutoLayout:
   'autoLayout' direction=ViewLayoutDirection (
     rankSep=Number (
@@ -479,6 +500,31 @@ NavigateToProperty:
 
 RelationNavigateToProperty:
   key='navigateTo' value=DynamicViewRef;
+
+// Global -------------------------------------
+
+Globals:
+  name='global' '{'
+    (
+      styles+=(GlobalStyle | GlobalStyleGroup)*
+    )*
+  '}';
+
+GlobalStyleId:
+  name=IdTerminal;
+
+GlobalStyle:
+  'style' id=GlobalStyleId target=ElementExpressionsIterator '{'
+    props+=(
+      StyleProperty |
+      NotationProperty
+    )*
+  '}';
+
+GlobalStyleGroup:
+  'styleGroup' id=GlobalStyleId '{'
+    styles+=ViewRuleStyle*
+  '}';
 
 // Common properties -------------------------------------
 
@@ -570,7 +616,7 @@ CustomColorId returns string:
   IdTerminal | ElementShape | ArrowType | LineOptions | 'element' | 'model';
 
 Id returns string:
-  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model';
+  IdTerminal | ElementShape | ThemeColor | ArrowType | LineOptions | 'element' | 'model' | 'group';
 
 fragment EqOperator:
   (

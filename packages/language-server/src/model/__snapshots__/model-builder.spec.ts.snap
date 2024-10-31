@@ -52,6 +52,9 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
       "title": "frontend",
     },
   },
+  "globals": {
+    "styles": {},
+  },
   "relations": {
     "1phfte1": {
       "id": "1phfte1",
@@ -146,7 +149,6 @@ exports[`LikeC4ModelBuilder > builds model with description and technology 1`] =
           "title": "system",
         },
       ],
-      "relativePath": "",
       "tags": null,
       "title": "Landscape view",
     },
@@ -207,6 +209,9 @@ exports[`LikeC4ModelBuilder > builds model with extend 1`] = `
       "technology": null,
       "title": "frontend",
     },
+  },
+  "globals": {
+    "styles": {},
   },
   "relations": {
     "19veiui": {
@@ -519,6 +524,9 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
       "title": "user2",
     },
   },
+  "globals": {
+    "styles": {},
+  },
   "relations": {
     "p2bxx1": {
       "id": "p2bxx1",
@@ -611,7 +619,6 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec and tag 1`] = 
           "title": "user2",
         },
       ],
-      "relativePath": "",
       "tags": null,
       "title": "Landscape view",
     },
@@ -642,6 +649,9 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
       "technology": null,
       "title": "user2",
     },
+  },
+  "globals": {
+    "styles": {},
   },
   "relations": {
     "p2bxx1": {
@@ -731,7 +741,6 @@ exports[`LikeC4ModelBuilder > builds model with relationship spec with technolog
           "title": "user2",
         },
       ],
-      "relativePath": "",
       "tags": null,
       "title": "Landscape view",
     },
@@ -762,6 +771,9 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
       "technology": null,
       "title": "user2",
     },
+  },
+  "globals": {
+    "styles": {},
   },
   "relations": {
     "p2bxx1": {
@@ -851,7 +863,6 @@ exports[`LikeC4ModelBuilder > builds model with styled relationship 1`] = `
           "title": "user2",
         },
       ],
-      "relativePath": "",
       "tags": null,
       "title": "Landscape view",
     },

@@ -1,8 +1,17 @@
 import { isArray, isNullish } from 'remeda'
 import type { Tagged } from 'type-fest'
 import type { IconUrl, NonEmptyArray, Point, XYPoint } from './_common'
-import type { ElementKind, ElementShape, ElementStyle, Fqn, Link, Tag } from './element'
+import {
+  type BorderStyle,
+  ElementKind,
+  type ElementShape,
+  type ElementStyle,
+  type Fqn,
+  type Link,
+  type Tag
+} from './element'
 import type { ElementExpression, ElementPredicateExpression, Expression } from './expression'
+import type { GlobalStyleID } from './global'
 import type { RelationID, RelationshipArrowType, RelationshipKind, RelationshipLineType } from './relation'
 import type { Color, ThemeColorValues } from './theme'
 import type { ElementNotation } from './view-notation'
@@ -38,6 +47,15 @@ export function isViewRuleStyle(rule: ViewRule): rule is ViewRuleStyle {
   return 'style' in rule && 'targets' in rule
 }
 
+export interface ViewRuleGlobalStyle {
+  styleId: GlobalStyleID
+}
+export function isViewRuleGlobalStyle(rule: ViewRule): rule is ViewRuleGlobalStyle {
+  return 'styleId' in rule
+}
+
+export type ViewRuleStyleOrGlobalRef = ViewRuleStyle | ViewRuleGlobalStyle
+
 export type AutoLayoutDirection = 'TB' | 'BT' | 'LR' | 'RL'
 export function isAutoLayoutDirection(autoLayout: unknown): autoLayout is AutoLayoutDirection {
   return autoLayout === 'TB' || autoLayout === 'BT' || autoLayout === 'LR' || autoLayout === 'RL'
@@ -52,7 +70,20 @@ export function isViewRuleAutoLayout(rule: ViewRule): rule is ViewRuleAutoLayout
   return 'direction' in rule
 }
 
-export type ViewRule = ViewRulePredicate | ViewRuleStyle | ViewRuleAutoLayout
+export interface ViewRuleGroup {
+  groupRules: Array<ViewRulePredicate | ViewRuleGroup>
+  title: string | null
+  color?: Color
+  border?: BorderStyle
+  // 0-100
+  opacity?: number
+}
+
+export function isViewRuleGroup(rule: ViewRule): rule is ViewRuleGroup {
+  return 'title' in rule && 'groupRules' in rule && Array.isArray(rule.groupRules)
+}
+
+export type ViewRule = ViewRulePredicate | ViewRuleGroup | ViewRuleStyle | ViewRuleGlobalStyle | ViewRuleAutoLayout
 
 export interface BasicView<
   ViewType extends 'element' | 'dynamic',
@@ -147,7 +178,7 @@ export function isDynamicViewIncludeRule(rule: DynamicViewRule): rule is Dynamic
   return 'include' in rule && Array.isArray(rule.include)
 }
 
-export type DynamicViewRule = DynamicViewIncludeRule | ViewRuleStyle | ViewRuleAutoLayout
+export type DynamicViewRule = DynamicViewIncludeRule | ViewRuleStyle | ViewRuleGlobalStyle | ViewRuleAutoLayout
 export interface DynamicView<
   ViewIDs extends string = string,
   Tags extends string = string
@@ -246,6 +277,14 @@ export interface ComputedNode {
    * If this node was customized in the view
    */
   isCustomized?: boolean
+}
+export namespace ComputedNode {
+  /**
+   * Nodes group is a special kind of node, exisiting only in view
+   */
+  export function isNodesGroup(node: ComputedNode): boolean {
+    return node.kind === ElementKind.Group
+  }
 }
 
 export interface ComputedEdge {
@@ -358,6 +397,15 @@ export interface DiagramNode extends ComputedNode {
   // Absolute position, top left
   position: Point
   labelBBox: BBox
+}
+
+export namespace DiagramNode {
+  /**
+   * Nodes group is a special kind of node, exisiting only in view
+   */
+  export function isNodesGroup(node: DiagramNode): boolean {
+    return node.kind === ElementKind.Group
+  }
 }
 
 export interface DiagramEdge extends ComputedEdge {
